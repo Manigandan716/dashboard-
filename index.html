@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Customer Login Dashboard</title>
+  <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/684/684908.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      position: relative;
+      height: 100vh;
+    }
+    h1, h2, h3, p {
+      text-align: center;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+    .container {
+      width: 100%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      margin: 50px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      position: relative;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+    }
+    input {
+      color: #000;
+    }
+    button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #004a99;
+    }
+    .error {
+      color: #ff4d4d;
+      margin-top: 10px;
+      font-weight: 700;
+    }
+    .success {
+      color: #4CAF50;
+      font-weight: 700;
+    }
+    #dashboard-container {
+      display: none;
+    }
+    #customer-info {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px;
+      border-radius: 5px;
+      color: #fff;
+      font-weight: 500;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #customer-info img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      object-fit: cover;
+    }
+
+    /* Background image slider styles */
+    .background-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: -2;
+    }
+    .background-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .background-image.show {
+      opacity: 1;
+    }
+
+    /* Login button animation */
+    #login-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300%;
+      height: 300%;
+      background-color: #ff0;
+      transform: translate(-50%, -50%) rotate(45deg);
+      animation: lightning 1.5s infinite;
+      opacity: 0;
+      border-radius: 10px;
+      pointer-events: none;
+    }
+    @keyframes lightning {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(45deg) scale(1);
+      }
+      50% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(45deg) scale(1);
+      }
+    }
+
+    /* Bubbles animation styles */
+    .bubbles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+    .bubble {
+      position: absolute;
+      bottom: -100px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: rise 10s linear infinite;
+      filter: drop-shadow(0 0 5px rgba(255,255,255,0.7));
+    }
+    @keyframes rise {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-110vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Background slider container -->
+  <div class="background-container">
+    <div class="background-image show" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1920&q=80');"></div>
+    <div class="background-image" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80');"></div>
+    <div class="background-image" style="background-image: url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1920&q=80');"></div>
+  </div>
+
+  <!-- Bubbles container -->
+  <div class="bubbles"></div>
+
+  <!-- Login Page -->
+  <div class="container" id="login-container">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter username" autocomplete="off" />
+    <input type="password" id="password" placeholder="Enter password" autocomplete="off" />
+    <button id="login-btn">Login</button>
+    <p id="login-error" class="error"></p>
+  </div>
+
+  <!-- Dashboard Page -->
+  <div class="container" id="dashboard-container">
+    <h2>Welcome, Mani!</h2>
+    <input type="text" id="search-id" placeholder="Enter Customer ID or Name" autocomplete="off" />
+    <button id="search-btn">Search</button>
+    <div id="customer-info"></div>
+    <button id="logout-btn">Logout</button>
+  </div>
+
+  <script>
+    // Customer records with images (boy/girl avatars from unsplash)
+    const customers = [
+      { id: '101', name: 'Mani Kumar', email: 'mani@example.com', phone: '555-111-1111', address: 'Chennai', image: 'https://randomuser.me/api/portraits/men/11.jpg' },
+      { id: '102', name: 'Ravi Teja', email: 'ravi@example.com', phone: '555-222-2222', address: 'Hyderabad', image: 'https://randomuser.me/api/portraits/men/12.jpg' },
+      { id: '103', name: 'Arun Vijay', email: 'arun@example.com', phone: '555-333-3333', address: 'Coimbatore', image: 'https://randomuser.me/api/portraits/men/13.jpg' },
+      { id: '104', name: 'Sneha Reddy', email: 'sneha@example.com', phone: '555-444-4444', address: 'Bangalore', image: 'https://randomuser.me/api/portraits/women/14.jpg' },
+      { id: '105', name: 'Karthik Raj', email: 'karthik@example.com', phone: '555-555-5555', address: 'Salem', image: 'https://randomuser.me/api/portraits/men/15.jpg' },
+      { id: '106', name: 'Divya Mehta', email: 'divya@example.com', phone: '555-666-6666', address: 'Pune', image: 'https://randomuser.me/api/portraits/women/16.jpg' },
+      { id: '107', name: 'Ajay Kumar', email: 'ajay@example.com', phone: '555-777-7777', address: 'Delhi', image: 'https://randomuser.me/api/portraits/men/17.jpg' },
+      { id: '108', name: 'Priya Das', email: 'priya@example.com', phone: '555-888-8888', address: 'Kolkata', image: 'https://randomuser.me/api/portraits/women/18.jpg' },
+      { id: '109', name: 'Naveen S', email: 'naveen@example.com', phone: '555-999-9999', address: 'Madurai', image: 'https://randomuser.me/api/portraits/men/19.jpg' },
+      { id: '110', name: 'Reshma R', email: 'reshma@example.com', phone: '555-000-0000', address: 'Trichy', image: 'https://randomuser.me/api/portraits/women/20.jpg' },
+      { id: '111', name: 'Varun Nair', email: 'varun@example.com', phone: '555-121-1212', address: 'Kerala', image: 'https://randomuser.me/api/portraits/men/21.jpg' },
+      { id: '112', name: 'Deepa Menon', email: 'deepa@example.com', phone: '555-131-1313', address: 'Goa', image: 'https://randomuser.me/api/portraits/women/22.jpg' },
+      { id: '113', name: 'Vishal M', email: 'vishal@example.com', phone: '555-141-1414', address: 'Vellore', image: 'https://randomuser.me/api/portraits/men/23.jpg' },
+      { id: '114', name: 'Preethi K', email: 'preethi@example.com', phone: '555-151-1515', address: 'Mumbai', image: 'https://randomuser.me/api/portraits/women/24.jpg' },
+      { id: '115', name: 'Santosh B', email: 'santosh@example.com', phone: '555-161-1616', address: 'Nagpur', image: 'https://randomuser.me/api/portraits/men/25.jpg' },
+      { id: '116', name: 'Lakshmi D', email: 'lakshmi@example.com', phone: '555-171-1717', address: 'Tirupati', image: 'https://randomuser.me/api/portraits/women/26.jpg' },
+      { id: '117', name: 'Harish Rao', email: 'harish@example.com', phone: '555-181-1818', address: 'Warangal', image: 'https://randomuser.me/api/portraits/men/27.jpg' },
+      { id: '118', name: 'Meena Iyer', email: 'meena@example.com', phone: '555-191-1919', address: 'Thanjavur', image: 'https://randomuser.me/api/portraits/women/28.jpg' },
+      { id: '119', name: 'Rajeev R', email: 'rajeev@example.com', phone: '555-202-2020', address: 'Vizag', image: 'https://randomuser.me/api/portraits/men/29.jpg' },
+      { id: '120', name: 'Keerthi S', email: 'keerthi@example.com', phone: '555-212-2121', address: 'Erode', image: 'https://randomuser.me/api/portraits/women/30.jpg' },
+    ];
+
+    // DOM Elements
+    const loginBtn = document.getElementById('login-btn');
+    const loginError = document.getElementById('login-error');
+    const loginContainer = document.getElementById('login-container');
+    const dashboardContainer = document.getElementById('dashboard-container');
+    const searchInput = document.getElementById('search-id');
+    const searchBtn = document.getElementById('search-btn');
+    const customerInfoDiv = document.getElementById('customer-info');
+    const logoutBtn = document.getElementById('logout-btn');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    // Login functionality
+    loginBtn.addEventListener('click', () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if (username.toLowerCase() === 'mani' && password === 'mani@1234') {
+        loginError.innerHTML = '<span class="success">Login successful! Loading dashboard...</span>';
+        setTimeout(() => {
+          loginContainer.style.display = 'none';
+          dashboardContainer.style.display = 'block';
+          searchInput.focus();
+        }, 1500);
+      } else {
+        loginError.textContent = 'Invalid username or password!';
+      }
+    });
+
+    // Search functionality
+    searchBtn.addEventListener('click', () => {
+      const searchId = searchInput.value.trim().toLowerCase();
+      if (!searchId) {
+        customerInfoDiv.innerHTML = '<p style="color:#ff4d4d;">Please enter a Customer ID or Name.</p>';
+        return;
+      }
+
+      const customer = customers.find(c =>
+        c.id === searchId ||
+        c.name.toLowerCase().includes(searchId)
+      );
+
+      if (customer) {
+        customerInfoDiv.innerHTML =
+          `<img src="${customer.image}" alt="${customer.name}" />
+           <p><strong>ID:</strong> ${customer.id}</p>
+           <p><strong>Name:</strong> ${customer.name}</p>
+           <p><strong>Email:</strong> ${customer.email}</p>
+           <p><strong>Phone:</strong> ${customer.phone}</p>
+           <p><strong>Address:</strong> ${customer.address}</p>`;
+      } else {
+        customerInfoDiv.innerHTML = '<p style="color:#ff4d4d;">Customer not found.</p>';
+      }
+    });
+
+    // Logout functionality
+    logoutBtn.addEventListener('click', () => {
+      dashboardContainer.style.display = 'none';
+      loginContainer.style.display = 'block';
+      loginError.textContent = '';
+      customerInfoDiv.innerHTML = '';
+      usernameInput.value = '';
+      passwordInput.value = '';
+      searchInput.value = '';
+      usernameInput.focus();
+    });
+
+    // Background image slider functionality
+    const images = document.querySelectorAll('.background-image');
+    let currentIndex = 0;
+    function changeBackground() {
+      images[currentIndex].classList.remove('show');
+      currentIndex = (currentIndex + 1) % images.length;
+      images[currentIndex].classList.add('show');
+    }
+    setInterval(changeBackground, 4000); // Change every 4 seconds
+
+    // Bubbles animation creation
+    const bubblesContainer = document.querySelector('.bubbles');
+
+    function createBubble() {
+      const bubble = document.createElement('div');
+      bubble.classList.add('bubble');
+      function createBubble() {
+  const bubble = document.createElement('div');
+  bubble.classList.add('bubble');
+
+  // Random size between 10 and 40 px
+  const size = Math.random() * 30 + 10;
+  bubble.style.width = `${size}px`;
+  bubble.style.height = `${size}px`;
+
+  // Random horizontal position
+  bubble.style.left = `${Math.random() * 100}vw`;
+
+  // Random animation duration between 8s and 15s
+  const duration = Math.random() * 7 + 8;
+  bubble.style.animationDuration = `${duration}s`;
+
+  // Random animation delay
+  const delay = Math.random() * 10;
+  bubble.style.animationDelay = `${delay}s`;
+
+  bubblesContainer.appendChild(bubble);
+
+  // Remove bubble after animation finishes
+  setTimeout(() => {
+    bubble.remove();
+  }, (duration + delay) * 1000);
+}
+
+// Create bubbles continuously
+setInterval(createBubble, 500);
+
+    }
+  </script>
+</body>
+</html>
